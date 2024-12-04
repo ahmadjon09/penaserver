@@ -22,8 +22,8 @@ app.use('/client', ClientRoutes)
 app.use('/goods', GoodsRoutes)
 app.use('/warehouse', WareHouse)
 app.use('/worker', Worker)
-app.use('/gish', Worker_Name)
-app.use('/worker-name', Gish)
+app.use('/gish', Gish)
+app.use('/worker-name', Worker_Name)
 
 // MongoDB bilan bog'lanish va serverni ishga tushirish
 const startApp = async () => {
