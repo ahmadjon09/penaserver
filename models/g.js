@@ -8,5 +8,5 @@ const GishSchema = new mongoose.Schema(
   { timestamps: true }
 )
 
-const Gish = mongoose.model('Gish', GishSchema)
+const Gish = mongoose.model('g', GishSchema)
 export default Gish

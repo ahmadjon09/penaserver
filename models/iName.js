@@ -1,12 +1,13 @@
 import mongoose from 'mongoose'
 
-const IshchiNameSchema = new mongoose.Schema(
+const WorkerNameSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
-    phoneNumber: { type: Number, required: true }
+    phoneNumber: { type: Number, required: true, unique: true },
+    g: { type: [Object], default: [] } 
   },
   { timestamps: true }
 )
 
-const IshchiName = mongoose.model('Worker-name', IshchiNameSchema)
-export default IshchiName
+const WorkerName = mongoose.model('WorkerName', WorkerNameSchema)
+export default WorkerName

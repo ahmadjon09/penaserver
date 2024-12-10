@@ -1,82 +1,95 @@
-import IshName from '../models/iName.js'
+import WorkerName from '../models/iName.js';
+
+// Helper function for error response
 const sendErrorResponse = (res, statusCode, message) => {
-  return res.status(statusCode).json({ message })
-}
+  return res.status(statusCode).json({ message });
+};
 
-export const GetAllIshName = async (_, res) => {
+// Get all worker names
+export const GetAllWorkerName = async (_, res) => {
   try {
-    const IshName = await IshName.find()
-    return res.json({
-      data: IshName
-    })
+    const workers = await WorkerName.find();
+    return res.status(200).json({ data: workers });
   } catch (error) {
-    return sendErrorResponse(res, 500, 'Ички сервер хатоси.')
+    console.error('Error fetching workers:', error);
+    return sendErrorResponse(res, 500, 'Server Error while fetching workers.');
   }
-}
+};
 
-export const IshNameCreateOne = async (req, res) => {
-  try {
-    const { name, phoneNumber } = req.body
-    const newIshName = new IshName({
-      name,
-      phoneNumber
-    })
-    newIshName.save()
-    return res.status(201).json({
-      data: newIshName
-    })
-  } catch (error) {
-    return sendErrorResponse(res, 500, 'Ички сервер хатоси.D')
-  }
-}
+// Create a new worker
+export const WorkerNameCreateOne = async (req, res) => {
+  const { name, phoneNumber, g } = req.body;
 
-export const UpdateIshName = async (req, res) => {
-  const IshNameId = req.params.id
-  const { name, phoneNumber } = req.body
   try {
-    const updatedIshName = {
-      name,
-      phoneNumber
+    // Check if a worker with the same phone number already exists
+    const existingWorker = await WorkerName.findOne({ phoneNumber });
+    if (existingWorker) {
+      return sendErrorResponse(res, 400, 'Worker with this phone number already exists!');
     }
 
-    const IshName = await IshName.findByIdAndUpdate(IshNameId, updatedIshName, {
-      new: true,
-      runValidators: true
-    })
+    const newWorker = new WorkerName({ name, phoneNumber, g });
+    await newWorker.save();
 
-    if (!IshName) {
-      return sendErrorResponse(res, 404, 'Bu tavar topilmadi !')
-    }
-
-    return res.status(200).json({ data: IshName })
+    return res.status(201).json({ data: newWorker });
   } catch (error) {
-    return sendErrorResponse(res, 500, 'Ички сервер хатоси.')
+    console.error('Error creating worker:', error);
+    return sendErrorResponse(res, 500, 'Server Error while creating worker.');
   }
-}
+};
 
-export const GetOneIshName = async (req, res) => {
-  const IshNameId = req.params.id
-  try {
-    const IshName = await IshName.findById(IshNameId)
-    if (!IshName) {
-      return sendErrorResponse(res, 409, 'Tavar topilmadi!')
-    }
-    return res.status(201).json({ data: IshName })
-  } catch (error) {
-    return sendErrorResponse(res, 500, 'Ички сервер хатоси.')
-  }
-}
-
-export const DeleteIshName = async (req, res) => {
-  const { id } = req.params
+// Update a worker's name
+export const UpdateWorkerName = async (req, res) => {
+  const { id } = req.params;
+  const { name, phoneNumber, g } = req.body;
 
   try {
-    const deletedIshName = await IshName.findByIdAndDelete(id)
-    if (!deletedIshName) {
-      return sendErrorResponse(res, 404, 'Tavar topilmadi!')
+    const updatedWorker = await WorkerName.findByIdAndUpdate(
+      id,
+      { name, phoneNumber, g },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedWorker) {
+      return sendErrorResponse(res, 404, 'Worker not found!');
     }
-    return res.status(200).json({ message: 'Tavar olib tashlandi' })
+
+    return res.status(200).json({ data: updatedWorker });
   } catch (error) {
-    return sendErrorResponse(res, 500, 'Ички сервер хатоси.C')
+    console.error('Error updating worker:', error);
+    return sendErrorResponse(res, 500, 'Server Error while updating worker.');
   }
-}
+};
+
+// Get one worker by ID
+export const GetOneWorkerName = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const worker = await WorkerName.findById(id);
+    if (!worker) {
+      return sendErrorResponse(res, 404, 'Worker not found!');
+    }
+
+    return res.status(200).json({ data: worker });
+  } catch (error) {
+    console.error('Error fetching worker:', error);
+    return sendErrorResponse(res, 500, 'Server Error while fetching worker.');
+  }
+};
+
+// Delete a worker
+export const DeleteWorkerName = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const deletedWorker = await WorkerName.findByIdAndDelete(id);
+    if (!deletedWorker) {
+      return sendErrorResponse(res, 404, 'Worker not found!');
+    }
+
+    return res.status(200).json({ message: 'Worker successfully deleted.' });
+  } catch (error) {
+    console.error('Error deleting worker:', error);
+    return sendErrorResponse(res, 500, 'Server Error while deleting worker.');
+  }
+};

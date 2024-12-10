@@ -9,6 +9,7 @@ import WareHouse from './routes/warehouse.js'
 import Worker from './routes/i.js'
 import Worker_Name from './routes/iName.js'
 import Gish from './routes/g.js'
+import WorkerName from './models/iName.js'
 
 dotenv.config()
 
@@ -24,7 +25,20 @@ app.use('/warehouse', WareHouse)
 app.use('/worker', Worker)
 app.use('/gish', Gish)
 app.use('/worker-name', Worker_Name)
-
+app.put('/worker-name/:id', async (req, res) => {
+  const { id } = req.params
+  const { type, count } = req.body
+  try {
+    const worker = await WorkerName.findByIdAndUpdate(
+      id,
+      { $push: { g: { type, count } } },
+      { new: true }
+    )
+    res.status(200).json(worker)
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating worker', error })
+  }
+})
 // MongoDB bilan bog'lanish va serverni ishga tushirish
 const startApp = async () => {
   try {
